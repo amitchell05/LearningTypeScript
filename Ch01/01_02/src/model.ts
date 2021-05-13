@@ -4,6 +4,7 @@ let trackingNumber: string = 'FD123455';
 let createDate: Date = new Date();
 let originalCost: number = 425;
 
+// Example of an inline type definition
 function getInventoryItem(trackingNumber: string): {
   displayName: string;
   inventoryType: string;
