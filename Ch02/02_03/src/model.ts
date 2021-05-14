@@ -6,24 +6,12 @@ let originalCost = 425;
 
 // To limit values to the only ones you expect, use one of these two approaches
 
-// Approach 1: Define an enum
-// enum => a strongly typed object that defines a set of named values
-
-// Example of an enum type with two possible values: Computer and Furniture
-
-// Unlike interfaces, an enum produces code that can be evaluated at runtime
-
-enum InventoryItemType {
-  // TypeScript allows us to assign our own string values to enums
-  // Ensures we get exactly what we need
-  Computer = 'computer',
-  Furniture = 'furniture',
-}
+// Approach 2: Define a literal type (i.e. the simplier approach)
 
 interface InventoryItem {
   displayName: string;
-  // Update your InventoryItem interface to use this enum instead of a string
-  inventoryType: InventoryItemType;
+  // Define the list of possible values separated by the pipe character
+  inventoryType: 'computer' | 'furniture';
   readonly trackingNumber: string;
   createDate: Date;
   originalCost?: number;
@@ -45,8 +33,8 @@ inventoryItem.createDate = new Date();
 
 saveInventoryItem({
   displayName: 'MacBook Pro 15 Retina',
-  // When you want to use one of the values, refer to it as if it's a property of the enum
-  inventoryType: InventoryItemType.Computer,
+  // TypeScript will give you the autocomplete options
+  inventoryType: 'computer',
   trackingNumber: 'MBP123456',
   createDate: new Date(),
 });
