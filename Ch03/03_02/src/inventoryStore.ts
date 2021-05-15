@@ -1,4 +1,28 @@
+// To give _categories a type, create a interface named 'Category'
+// Use literal types to define the Category's properties
+interface Category {
+  name: string;
+  displayName: string;
+  subCategories: { name: string; displayName: string }[];
+}
+
 class InventoryStore {
+  // In TypeScript, all possible properties must be defined at the class level
+
+  // Enhance the property definitions by giving them a type
+
+  // We can intialize the values of these properties when we define them, as opposed to in the constructor
+
+  // _categories is an array of Category objects
+  _categories: Category[] = [];
+
+  // _items is an array of InventoryItem objects
+  // Use the InventoryItem interface and append it with opening and closing brackets to indicate an array
+  _items: InventoryItem[] = [];
+
+  // _isInitialized is a Promise that returns a boolean value
+  _isInitialized: Promise<boolean>;
+
   /** the inventory categories */
   get categories() {
     return this._categories;
@@ -15,9 +39,11 @@ class InventoryStore {
   }
 
   constructor() {
+    // In JavaScript, it's common to assign values to properties in the constructor
+
     // define and initialize properties (which happen to be "private")
-    this._categories = [];
-    this._items = [];
+    // this._categories = [];
+    // this._items = [];
 
     // load initial set of data
     this._isInitialized = this._load();
@@ -29,8 +55,10 @@ class InventoryStore {
    * @param {string} trackingNumber the item's tracking number
    * @returns the inventory item with the given tracking number, or null
    */
-  getItem(trackingNumber) {
-    return this._items.find(x => x.trackingNumber === trackingNumber);
+
+  // Add types to methods as well
+  getItem(trackingNumber: string): InventoryItem {
+    return this._items.find((x) => x.trackingNumber === trackingNumber);
   }
 
   /**
@@ -39,16 +67,14 @@ class InventoryStore {
    * @param {InventoryItem} item the item to add to inventory
    * @returns {Promise<InventoryItem>} promise containing the updated item after it's been saved
    */
-  addItem(item) {
+  addItem(item: InventoryItem): Promise<InventoryItem> {
     const errors = this.validateItem(item);
 
     if (errors.length) {
       return Promise.reject(errors);
     }
 
-    const trackingNumber = Math.random()
-      .toString(36)
-      .substr(2, 9);
+    const trackingNumber = Math.random().toString(36).substr(2, 9);
 
     item.trackingNumber = trackingNumber;
 
@@ -73,51 +99,51 @@ class InventoryStore {
     //#region Validation logic applying to any/all types of inventory items
 
     if (item == null) {
-      addError("", "item is null");
+      addError('', 'item is null');
       return errors;
     }
 
     if (!item.inventoryType) {
-      addError("inventoryType", "Please select a valid Category");
+      addError('inventoryType', 'Please select a valid Category');
     }
 
     if (!item.name) {
-      addError("name", "Name must be greater then 5 characters long");
+      addError('name', 'Name must be greater then 5 characters long');
     }
 
     if (!item.assignedTo) {
-      addError("assignedTo", "Please select the person this is assigned to");
+      addError('assignedTo', 'Please select the person this is assigned to');
     }
 
     if (!item.subCategory) {
-      addError("assignedTo", "Please select a Sub-Category");
+      addError('assignedTo', 'Please select a Sub-Category');
     }
 
     //#endregion
 
     switch (item.inventoryType) {
       // Computer-specific validation
-      case "computer":
+      case 'computer':
         if (item.year > new Date().getFullYear()) {
-          addError("name", "Please select a year (future years are not valid)");
+          addError('name', 'Please select a year (future years are not valid)');
         }
 
         if (!item.serialNumber) {
-          addError("serialNumber", "Please specify a valid serial number");
+          addError('serialNumber', 'Please specify a valid serial number');
         }
         break;
 
       // Furniture-specific validation
-      case "furniture":
+      case 'furniture':
         if (!item.model) {
           addError(
-            "model",
-            "Please provide a model, serial number, or description"
+            'model',
+            'Please provide a model, serial number, or description'
           );
         }
 
         if (!item.manufacturer) {
-          addError("manufacturer", "Please identify the item's manufacturer");
+          addError('manufacturer', "Please identify the item's manufacturer");
         }
         break;
     }
@@ -153,8 +179,8 @@ class InventoryStore {
    */
   _load() {
     return Promise.all([
-      getFromStorage("Categories"),
-      getFromStorage("Inventory")
+      getFromStorage('Categories'),
+      getFromStorage('Inventory'),
     ]).then(([categories, items]) => {
       this._categories = categories;
       this._items = items;
@@ -169,14 +195,20 @@ class InventoryStore {
    * @private  <-- just information, doesn't actually do anything at runtime
    */
   _save() {
-    return saveToStorage("Inventory", this._items);
+    return saveToStorage('Inventory', this._items);
   }
 
   //#endregion
+
+  // Instead, we'll need to define property on the class itself rather than its instance
+  // Define a property on a class using the 'static' keyword
+  static instance = new InventoryStore();
 }
 
 // Create a "static" singleton instance for the entire application to use
-InventoryStore.instance = new InventoryStore();
+// TypeScript complains that we try to set a value on a property that has not been defined yet
+
+// InventoryStore.instance = new InventoryStore();
 
 // Expose the singleton in its own variable
 const inventoryStore = InventoryStore.instance;
