@@ -1,14 +1,14 @@
 interface Category {
-  name: string,
-  displayName: string,
-  subCategories: { name: string, displayName: string }[]
+  name: string;
+  displayName: string;
+  subCategories: { name: string; displayName: string }[];
 }
 
 class InventoryStore {
-  _categories: Category[] = [];
-  _items: InventoryItem[] = [];
-  _isInitialized: Promise<boolean>;
-
+  // Make these three properties private with the `private` keyword
+  private _categories: Category[] = [];
+  private _items: InventoryItem[] = [];
+  private _isInitialized: Promise<boolean>;
 
   /** the inventory categories */
   get categories() {
@@ -37,7 +37,7 @@ class InventoryStore {
    * @returns the inventory item with the given tracking number, or null
    */
   getItem(trackingNumber: string): InventoryItem {
-    return this._items.find(x => x.trackingNumber === trackingNumber);
+    return this._items.find((x) => x.trackingNumber === trackingNumber);
   }
 
   /**
@@ -53,9 +53,7 @@ class InventoryStore {
       return Promise.reject(errors);
     }
 
-    const trackingNumber = Math.random()
-      .toString(36)
-      .substr(2, 9);
+    const trackingNumber = Math.random().toString(36).substr(2, 9);
 
     item.trackingNumber = trackingNumber;
 
@@ -80,51 +78,51 @@ class InventoryStore {
     //#region Validation logic applying to any/all types of inventory items
 
     if (item == null) {
-      addError("", "item is null");
+      addError('', 'item is null');
       return errors;
     }
 
     if (!item.inventoryType) {
-      addError("inventoryType", "Please select a valid Category");
+      addError('inventoryType', 'Please select a valid Category');
     }
 
     if (!item.name) {
-      addError("name", "Name must be greater then 5 characters long");
+      addError('name', 'Name must be greater then 5 characters long');
     }
 
     if (!item.assignedTo) {
-      addError("assignedTo", "Please select the person this is assigned to");
+      addError('assignedTo', 'Please select the person this is assigned to');
     }
 
     if (!item.subCategory) {
-      addError("assignedTo", "Please select a Sub-Category");
+      addError('assignedTo', 'Please select a Sub-Category');
     }
 
     //#endregion
 
     switch (item.inventoryType) {
       // Computer-specific validation
-      case "computer":
+      case 'computer':
         if (item.year > new Date().getFullYear()) {
-          addError("name", "Please select a year (future years are not valid)");
+          addError('name', 'Please select a year (future years are not valid)');
         }
 
         if (!item.serialNumber) {
-          addError("serialNumber", "Please specify a valid serial number");
+          addError('serialNumber', 'Please specify a valid serial number');
         }
         break;
 
       // Furniture-specific validation
-      case "furniture":
+      case 'furniture':
         if (!item.model) {
           addError(
-            "model",
-            "Please provide a model, serial number, or description"
+            'model',
+            'Please provide a model, serial number, or description'
           );
         }
 
         if (!item.manufacturer) {
-          addError("manufacturer", "Please identify the item's manufacturer");
+          addError('manufacturer', "Please identify the item's manufacturer");
         }
         break;
     }
@@ -158,10 +156,12 @@ class InventoryStore {
    *
    * @private  <-- just information, doesn't actually do anything at runtime
    */
-  _load() {
+
+  // Make _load() and _save() methods protected so they can be used by any class that derives from the IntentoryStore class
+  protected _load() {
     return Promise.all([
-      getFromStorage("Categories"),
-      getFromStorage("Inventory")
+      getFromStorage('Categories'),
+      getFromStorage('Inventory'),
     ]).then(([categories, items]) => {
       this._categories = categories;
       this._items = items;
@@ -175,8 +175,8 @@ class InventoryStore {
    *
    * @private  <-- just information, doesn't actually do anything at runtime
    */
-  _save() {
-    return saveToStorage("Inventory", this._items);
+  protected _save() {
+    return saveToStorage('Inventory', this._items);
   }
 
   //#endregion
@@ -185,6 +185,14 @@ class InventoryStore {
   static instance = new InventoryStore();
 }
 
-
 // Expose the singleton in its own variable
 const inventoryStore = InventoryStore.instance;
+
+// If you try to make a new instance and access its members, they will not show up on your list of auto-complete options
+// If you try to use them, TypeScript will produce an error
+// inventoryStore._save({} as any);
+
+// TypeScript is a superset of JavaScript = it only extends JavaScript's functionality; it does not change how JavaScript works
+// Despite TypeScript's complaining, line 193's code will get rendered in the trans-piled code and executeed at runtime
+
+// Purpose of using TypeScript =>  listen to warning errors and correct them!
