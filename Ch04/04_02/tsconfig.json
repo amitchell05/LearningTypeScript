@@ -1,6 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "outDir": "dist"
-    }
+  // To expand the files viewaable, add the following config settings: allowJs and checkJs
+  "compilerOptions": {
+    "target": "es5",
+    "outDir": "dist",
+    // set allowJs to true
+    "allowJs": true,
+    // set checkJs to true
+    "checkJs": true
+
+    // These options tell TypeScript to inspect the .js files, and check them for compile time errors by using type inference and .ts file info
+  }
 }
