@@ -1,8 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "outDir": "dist",
-        "allowJs": true,
-        "checkJs": true
-    }
+  "compilerOptions": {
+    "target": "es5",
+    "outDir": "dist",
+    "allowJs": true,
+    "checkJs": true,
+    // lib configuration option => an array of names of optional libraries that TypeScript knows about, but does not include by default
+    // This only affects type-checking; it has no effect on the code that TypeScript actually outputs
+    // This tells TypeScript these APIs will be available in your target environments, but it's up to you to guarantee it
+    // Guarantee it by either limiting the environments and browsers you support OR by including polyfills with your code
+    "lib": ["ES2015.Promise", "WebWorker", "DOM"]
+  }
 }
